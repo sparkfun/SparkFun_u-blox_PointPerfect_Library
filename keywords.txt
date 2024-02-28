@@ -1,0 +1,48 @@
+#######################################
+# Syntax Coloring Map
+#######################################
+
+#######################################
+# Datatypes (KEYWORD1)
+#######################################
+
+#######################################
+# Methods and Functions (KEYWORD2)
+#######################################
+
+PPL_Initialize	KEYWORD2
+PPL_SendDynamicKey	KEYWORD2
+PPL_SendSpartn	KEYWORD2
+PPL_SendUBXLBand	KEYWORD2
+PPL_SendAuxSpartn	KEYWORD2
+PPL_SendRcvrData	KEYWORD2
+PPL_GetRTCMOutput	KEYWORD2
+
+#######################################
+# Constants (LITERAL1)
+#######################################
+
+PPL_SDK_VERSION	LITERAL1
+
+ePPL_Success	LITERAL1
+ePPL_IncorrectLibUsage	LITERAL1
+ePPL_LibInitFailed	LITERAL1
+ePPL_LibExpired	LITERAL1
+ePPL_LBandChannelNotEnabled	LITERAL1
+ePPL_IPChannelNotEnabled	LITERAL1
+ePPL_AuxChannelNotEnabled	LITERAL1
+ePPL_NoDynamicKey	LITERAL1
+ePPL_FailedDynKeyLibPush	LITERAL1
+ePPL_InvalidDynKey	LITERAL1
+ePPL_IncorrectDynKey	LITERAL1
+ePPL_RcvPosNotAvailable	LITERAL1
+ePPL_LeapSecsNotAvailable	LITERAL1
+ePPL_AreaDefNotAvailableForPos	LITERAL1
+ePPL_TimeNotResolved	LITERAL1
+ePPL_PotentialBuffOverflow	LITERAL1
+ePPL_UnknownState	LITERAL1
+
+PPL_CFG_DEFAULT_CFG	LITERAL1
+PPL_CFG_ENABLE_IP_CHANNEL	LITERAL1
+PPL_CFG_ENABLE_LBAND_CHANNEL	LITERAL1
+PPL_CFG_ENABLE_AUX_CHANNEL	LITERAL1
