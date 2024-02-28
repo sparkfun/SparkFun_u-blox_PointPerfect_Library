@@ -22,11 +22,12 @@ The u-blox PPL is normally distributed under a Non-Disclosure Agreement - see [L
 However, we requested and were very kindly given permission to publish the ESP32 version of the PPL compiled binary
 (Support Request #6030).
 
-We are using the PPL in the new SparkFun RTK Facet mosaic (Tri-Band, L1/L2/L5/L-Band) based around the Septentrio mosaic-X5
+We are using the PPL in the new SparkFun RTK Facet mosaic (Tri-Band, L1/L2/L5/L-Band) based on the Septentrio mosaic-X5
 and using its built-in L-Band receiver. It will come with a 12 month subscription to PointPerfect, like our existing Facet
 L-Band. The decryption key will be delivered seamlessly via One Touch Provisioning.
 
-We are very excited about other future products which will also utilize the PPL.
+We are also using the PPL in the new SparkFun RTK Torch (Tri-Band) based around the Unicore UM980. Here SPARTN data could
+be delivered by MQTT over WiFi, or via Bluetooth with your phone providing the data connection to Thingstream.
 
 ## Repository Contents
 
