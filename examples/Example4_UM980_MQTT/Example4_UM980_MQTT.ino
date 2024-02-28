@@ -12,7 +12,7 @@
 
   Hardware:
   This example was written for:
-    SparkFun Torch - The ESP32 UART1 is connected to UM980 UART 3
+    SparkFun Torch -  (Coming soon!) - The ESP32 UART1 is connected to UM980 UART 3
     Note: The Torch is limited to 51200bps upload speed
     Note: PSRAM is required to support WiFi and PPL simultaneously
 
