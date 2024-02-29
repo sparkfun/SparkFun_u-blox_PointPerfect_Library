@@ -79,7 +79,7 @@ void mqttMessageHandler(int messageSize)
       if (topicKey)
       {
         // This is a cheat... We should be using a JSON library to read the keys.
-        // But life is short... Here we check the nodes using sscanf.
+        // But life is short... Here we check the current key using strstr and sscanf.
         char *keyPtr = strstr((const char *)mqttData, "\"dynamickeys\":{");
         if (keyPtr != nullptr)
         {
