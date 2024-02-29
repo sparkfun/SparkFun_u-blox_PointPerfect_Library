@@ -14,7 +14,7 @@ const unsigned short AWS_IOT_PORT   = 8883;
 // You may need to update these depending on your plan and location. Please see:
 //   Location Services \ Location Things \ Thing Details \ Topics
 
-const char MQTT_TOPIC_KEY[]        = "/pp/key/Lb"; // This topic provides the L-Band and L-Band + IP only dynamic keys in JSON format
+const char MQTT_TOPIC_KEY[]        = "/pp/key/Lb"; // This topic provides the L-Band and L-Band + IP dynamic keys in JSON format
 //const char MQTT_TOPIC_KEY[]        = "/pp/key/ip"; // This topic provides the IP-only dynamic keys in JSON format
 
 const char MQTT_TOPIC_SPARTN[]     = "/pp/Lb/us"; // This topic provides the US SPARTN corrections for L-Band and L-Band + IP

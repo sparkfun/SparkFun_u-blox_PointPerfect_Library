@@ -16,12 +16,14 @@
     Note: The Torch is limited to 51200bps upload speed
     Note: PSRAM is required to support WiFi and PPL simultaneously
 
-  Select ESP32 Dev Module as the board
+  Set the Board to ESP32 Dev Module
+  Set Upload Speed to 512000 (921600 fails)
+  Set Flash Size to 16MB
   Set PSRAM to Enabled
+  If desired, set Core Debug Level to Debug
 
   Press and hold power button for 4 seconds to enable code upload
   For code upload, select USB-Enhanced-SERIAL-B CH342 (not A)
-  Use upload baud rate of 512000 (921600 fails)
 
   Licence: please see LICENSE.md for more details. The PPL is reproduced by kind permission of u-blox
 
