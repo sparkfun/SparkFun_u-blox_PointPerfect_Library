@@ -474,7 +474,7 @@ void setup()
   //   RTCM1020
   //   RTCM1042
   //   RTCM1046
-  // Also configure L-Band and direct the raw stream to COM3
+  // Also configure L-Band and direct the raw stream to COM4
 
   serialGNSS.begin(115200, SERIAL_8N1, serialRxPin, serialTxPin);
 
