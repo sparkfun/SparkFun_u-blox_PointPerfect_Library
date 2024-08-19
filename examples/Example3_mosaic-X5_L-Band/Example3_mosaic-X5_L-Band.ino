@@ -422,10 +422,10 @@ void setup()
   sendWithResponse("sr3o,COM2,RTCM1019+RTCM1020+RTCM1042+RTCM1046\n\r", "RTCMv3Output"); // RTCMv3 output
 
   // Mark L5 as healthy
-  sendWithResponse("setHealthMask,Tracking,off\n\r", "HealthMask");
-  sendWithResponse("setHealthMask,PVT,off\n\r", "HealthMask");
-  sendWithResponse("setSignalTracking,+GPSL5\n\r", "SignalTracking");
-  sendWithResponse("setSignalUsage,+GPSL5,+GPSL5\n\r", "SignalUsage");
+  sendWithResponse("shm,Tracking,off\n\r", "HealthMask");
+  sendWithResponse("shm,PVT,off\n\r", "HealthMask");
+  sendWithResponse("snt,+GPSL5\n\r", "SignalTracking");
+  sendWithResponse("snu,+GPSL5,+GPSL5\n\r", "SignalUsage");
 
   Serial.println(F("Configuring mosaic-X5 L-Band output on COM3"));
 
