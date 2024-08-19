@@ -38,6 +38,7 @@
   Open a Serial Monitor / Terminal Emulator at 115200 baud to see the output.
   If needed, install Septentrio RxTools - this includes the X5 USB driver.
     https://www.septentrio.com/en/support/software/rxtools
+  Connect the CONFIG MOSAIC USB-C port to your computer.
   Point a web browser at 192.168.3.1 to view the mosaic-X5's internal web page.
 
   Licence: please see LICENSE.md for more details. The PPL is reproduced by kind permission of u-blox
