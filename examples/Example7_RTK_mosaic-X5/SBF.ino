@@ -60,10 +60,13 @@ uint16_t ccitt_crc_update(uint16_t crc, const uint8_t data)
     return crc;
 }
 
-// Returns nullptr is data is being parsed
+// Parse incoming SBF data
+// dataByte contains the incoming message byte
+// Returns nullptr if data is being parsed (absorbed)
+// Returns a pointer to the parsed data when parsing is complete
 // valid indicates if the parsed data is valid
 // numDataBytes is a count of the parsed bytes
-// If valid is false, the user can pass the numDataBytes to another parser (e.g. parseSPARTN)
+// If valid is false, the user can choose to pass the numDataBytes to another parser (e.g. parseSPARTN)
 const uint8_t *parseSBF(uint8_t dataByte, bool &valid, size_t &numDataBytes)
 {
     const int maxLen = 2000;
@@ -201,9 +204,9 @@ const uint8_t *parseSBF(uint8_t dataByte, bool &valid, size_t &numDataBytes)
     {
         parseState = Sync1; // Something has gone very wrong...
         valid = false;
-        numDataBytes = maxLen - 1;
-        return (const uint8_t *)buffer; // This is probably pointless...
+        numDataBytes = maxLen - 1; // This is probably pointless...
+        return (const uint8_t *)buffer;
     }
 
-    return nullptr; // nullptr indicates SBF data is being parsed
+    return nullptr; // nullptr indicates SBF data is being parsed (absorbed)
 }

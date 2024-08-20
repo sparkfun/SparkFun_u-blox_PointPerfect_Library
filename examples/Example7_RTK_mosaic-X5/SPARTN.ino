@@ -3,19 +3,6 @@
 // SPARTN CRC calculation
 // Stolen from https://github.com/u-blox/ubxlib/blob/master/common/spartn/src/u_spartn_crc.c
 
-typedef struct
-{
-  uint8_t messageType;
-  uint16_t payloadLength;
-  uint16_t EAF;
-  uint8_t crcType;
-  uint8_t frameCRC;
-  uint8_t messageSubtype;
-  uint16_t timeTagType;
-  uint16_t authenticationIndicator;
-  uint16_t embeddedApplicationLengthBytes;
-} spartn_header_t;
-
 const uint8_t u8Crc4Table[] = {
     0x00U, 0x0BU, 0x05U, 0x0EU, 0x0AU, 0x01U, 0x0FU, 0x04U,
     0x07U, 0x0CU, 0x02U, 0x09U, 0x0DU, 0x06U, 0x08U, 0x03U,
@@ -48,8 +35,7 @@ const uint8_t u8Crc4Table[] = {
     0x0BU, 0x00U, 0x0EU, 0x05U, 0x01U, 0x0AU, 0x04U, 0x0FU,
     0x0CU, 0x07U, 0x09U, 0x02U, 0x06U, 0x0DU, 0x03U, 0x08U,
     0x05U, 0x0EU, 0x00U, 0x0BU, 0x0FU, 0x04U, 0x0AU, 0x01U,
-    0x02U, 0x09U, 0x07U, 0x0CU, 0x08U, 0x03U, 0x0DU, 0x06U
-};
+    0x02U, 0x09U, 0x07U, 0x0CU, 0x08U, 0x03U, 0x0DU, 0x06U};
 
 const uint8_t u8Crc8Table[] = {
     0x00U, 0x07U, 0x0EU, 0x09U, 0x1CU, 0x1BU, 0x12U, 0x15U,
@@ -83,8 +69,7 @@ const uint8_t u8Crc8Table[] = {
     0xAEU, 0xA9U, 0xA0U, 0xA7U, 0xB2U, 0xB5U, 0xBCU, 0xBBU,
     0x96U, 0x91U, 0x98U, 0x9FU, 0x8AU, 0x8DU, 0x84U, 0x83U,
     0xDEU, 0xD9U, 0xD0U, 0xD7U, 0xC2U, 0xC5U, 0xCCU, 0xCBU,
-    0xE6U, 0xE1U, 0xE8U, 0xEFU, 0xFAU, 0xFDU, 0xF4U, 0xF3U
-};
+    0xE6U, 0xE1U, 0xE8U, 0xEFU, 0xFAU, 0xFDU, 0xF4U, 0xF3U};
 
 const uint16_t u16Crc16Table[] = {
     0x0000U, 0x1021U, 0x2042U, 0x3063U, 0x4084U, 0x50A5U, 0x60C6U, 0x70E7U,
@@ -118,8 +103,7 @@ const uint16_t u16Crc16Table[] = {
     0xFD2EU, 0xED0FU, 0xDD6CU, 0xCD4DU, 0xBDAAU, 0xAD8BU, 0x9DE8U, 0x8DC9U,
     0x7C26U, 0x6C07U, 0x5C64U, 0x4C45U, 0x3CA2U, 0x2C83U, 0x1CE0U, 0x0CC1U,
     0xEF1FU, 0xFF3EU, 0xCF5DU, 0xDF7CU, 0xAF9BU, 0xBFBAU, 0x8FD9U, 0x9FF8U,
-    0x6E17U, 0x7E36U, 0x4E55U, 0x5E74U, 0x2E93U, 0x3EB2U, 0x0ED1U, 0x1EF0U
-};
+    0x6E17U, 0x7E36U, 0x4E55U, 0x5E74U, 0x2E93U, 0x3EB2U, 0x0ED1U, 0x1EF0U};
 
 const uint32_t u32Crc24Table[] = {
     0x00000000U, 0x00864CFBU, 0x008AD50DU, 0x000C99F6U, 0x0093E6E1U, 0x0015AA1AU, 0x001933ECU, 0x009F7F17U,
@@ -153,8 +137,7 @@ const uint32_t u32Crc24Table[] = {
     0x0026359FU, 0x00A07964U, 0x00ACE092U, 0x002AAC69U, 0x00B5D37EU, 0x00339F85U, 0x003F0673U, 0x00B94A88U,
     0x0087B4A6U, 0x0001F85DU, 0x000D61ABU, 0x008B2D50U, 0x00145247U, 0x00921EBCU, 0x009E874AU, 0x0018CBB1U,
     0x00E37B16U, 0x006537EDU, 0x0069AE1BU, 0x00EFE2E0U, 0x00709DF7U, 0x00F6D10CU, 0x00FA48FAU, 0x007C0401U,
-    0x0042FA2FU, 0x00C4B6D4U, 0x00C82F22U, 0x004E63D9U, 0x00D11CCEU, 0x00575035U, 0x005BC9C3U, 0x00DD8538U
-};
+    0x0042FA2FU, 0x00C4B6D4U, 0x00C82F22U, 0x004E63D9U, 0x00D11CCEU, 0x00575035U, 0x005BC9C3U, 0x00DD8538U};
 
 const uint32_t u32Crc32Table[] = {
     0x00000000U, 0x04C11DB7U, 0x09823B6EU, 0x0D4326D9U, 0x130476DCU, 0x17C56B6BU, 0x1A864DB2U, 0x1E475005U,
@@ -188,8 +171,7 @@ const uint32_t u32Crc32Table[] = {
     0xC5A92679U, 0xC1683BCEU, 0xCC2B1D17U, 0xC8EA00A0U, 0xD6AD50A5U, 0xD26C4D12U, 0xDF2F6BCBU, 0xDBEE767CU,
     0xE3A1CBC1U, 0xE760D676U, 0xEA23F0AFU, 0xEEE2ED18U, 0xF0A5BD1DU, 0xF464A0AAU, 0xF9278673U, 0xFDE69BC4U,
     0x89B8FD09U, 0x8D79E0BEU, 0x803AC667U, 0x84FBDBD0U, 0x9ABC8BD5U, 0x9E7D9662U, 0x933EB0BBU, 0x97FFAD0CU,
-    0xAFB010B1U, 0xAB710D06U, 0xA6322BDFU, 0xA2F33668U, 0xBCB4666DU, 0xB8757BDAU, 0xB5365D03U, 0xB1F740B4U
-};
+    0xAFB010B1U, 0xAB710D06U, 0xA6322BDFU, 0xA2F33668U, 0xBCB4666DU, 0xB8757BDAU, 0xB5365D03U, 0xB1F740B4U};
 
 // Support for SPARTN parsing
 // Mostly stolen from https://github.com/u-blox/ubxlib/blob/master/common/spartn/src/u_spartn_crc.c
@@ -202,7 +184,8 @@ uint8_t uSpartnCrc4(const uint8_t *pU8Msg, size_t size)
 
     // Compute the CRC value
     // Divide each byte of the message by the corresponding polynomial
-    for (size_t x = 0; x < size; x++) {
+    for (size_t x = 0; x < size; x++)
+    {
         u8TableRemainder = pU8Msg[x] ^ u8Remainder;
         u8Remainder = u8Crc4Table[u8TableRemainder];
     }
@@ -218,7 +201,8 @@ uint8_t uSpartnCrc8(const uint8_t *pU8Msg, size_t size)
 
     // Compute the CRC value
     // Divide each byte of the message by the corresponding polynomial
-    for (size_t x = 0; x < size; x++) {
+    for (size_t x = 0; x < size; x++)
+    {
         u8TableRemainder = pU8Msg[x] ^ u8Remainder;
         u8Remainder = u8Crc8Table[u8TableRemainder];
     }
@@ -231,11 +215,12 @@ uint16_t uSpartnCrc16(const uint8_t *pU8Msg, size_t size)
     // Initialize local variables
     uint16_t u16TableRemainder;
     uint16_t u16Remainder = 0; // Initial remainder
-    uint8_t  u8NumBitsInCrc = (8 * sizeof(uint16_t));
+    uint8_t u8NumBitsInCrc = (8 * sizeof(uint16_t));
 
     // Compute the CRC value
     // Divide each byte of the message by the corresponding polynomial
-    for (size_t x = 0; x < size; x++) {
+    for (size_t x = 0; x < size; x++)
+    {
         u16TableRemainder = pU8Msg[x] ^ (u16Remainder >> (u8NumBitsInCrc - 8));
         u16Remainder = u16Crc16Table[u16TableRemainder] ^ (u16Remainder << 8);
     }
@@ -252,7 +237,8 @@ uint32_t uSpartnCrc24(const uint8_t *pU8Msg, size_t size)
 
     // Compute the CRC value
     // Divide each byte of the message by the corresponding polynomial
-    for (size_t x = 0; x < size; x++) {
+    for (size_t x = 0; x < size; x++)
+    {
         u32TableRemainder = pU8Msg[x] ^ (u32Remainder >> (u8NumBitsInCrc - 8));
         u32Remainder = u32Crc24Table[u32TableRemainder] ^ (u32Remainder << 8);
         u32Remainder = u32Remainder & 0x00FFFFFF; // Only interested in 24 bits
@@ -271,7 +257,8 @@ uint32_t uSpartnCrc32(const uint8_t *pU8Msg, size_t size)
 
     // Compute the CRC value
     // Divide each byte of the message by the corresponding polynomial
-    for (size_t x = 0; x < size; x++) {
+    for (size_t x = 0; x < size; x++)
+    {
         u32TableRemainder = pU8Msg[x] ^ (u32Remainder >> (u8NumBitsInCrc - 8));
         u32Remainder = u32Crc32Table[u32TableRemainder] ^ (u32Remainder << 8);
     }
@@ -282,232 +269,250 @@ uint32_t uSpartnCrc32(const uint8_t *pU8Msg, size_t size)
 }
 
 // Parse SPARTN data
-uint8_t * parseSPARTN(uint8_t incoming, bool &valid, uint16_t &len)
+// incoming contains the incoming data byte
+// Returns nullptr if data is being parsed (absorbed)
+// Returns a pointer to the parsed data when parsing is complete
+// valid indicates if the parsed data is valid
+// numDataBytes is a count of the parsed bytes
+// If valid is false, the user can choose to pass the numDataBytes to another parser
+const uint8_t *parseSPARTN(uint8_t incoming, bool &valid, uint16_t &numDataBytes)
 {
-  typedef enum {
-    waitingFor73,
-    TF002_TF006,
-    TF007,
-    TF009,
-    TF016,
-    TF017,
-    TF018
-  } parseStates;
-  static parseStates parseState = waitingFor73;
+    typedef enum
+    {
+        waitingFor73,
+        TF002_TF006,
+        TF007,
+        TF009,
+        TF016,
+        TF017,
+        TF018
+    } parseStates;
+    static parseStates parseState = waitingFor73;
 
-  static uint8_t spartn[1100];
+    const int maxLen = 1100;
+    static uint8_t spartn[maxLen];
 
-  static spartn_header_t _header;
-  static uint16_t frameCount;
-  static uint16_t crcBytes;
-  static uint16_t TF007toTF016;
+    static uint16_t frameCount;
+    static uint16_t crcBytes;
+    static uint16_t TF007toTF016;
 
-  valid = false;
+    // static uint8_t messageType;
+    static uint16_t payloadLength;
+    static uint16_t EAF;
+    static uint8_t crcType;
+    static uint8_t frameCRC;
+    // static uint8_t messageSubtype;
+    static uint16_t timeTagType;
+    static uint16_t authenticationIndicator;
+    static uint16_t embeddedApplicationLengthBytes;
 
-  switch(parseState)
-  {
+    valid = false; // valid will only be true if the CRC is correct
+
+    switch (parseState)
+    {
     case waitingFor73:
-      if (incoming == 0x73)
-      {
-        parseState = TF002_TF006;
-        frameCount = 0;
         spartn[0] = incoming;
-      }
-      break;
+        if (incoming == 0x73)
+        {
+            parseState = TF002_TF006;
+            frameCount = 0;
+        }
+        else
+        {
+            // Invalid first byte
+            numDataBytes = 1;
+            return (const uint8_t *)spartn;
+        }
+        break;
     case TF002_TF006:
-      spartn[1 + frameCount] = incoming;
-      if (frameCount == 0)
-      {
-        _header.messageType = incoming >> 1;
-        _header.payloadLength = incoming & 0x01;
-      }
-      if (frameCount == 1)
-      {
-        _header.payloadLength <<= 8;
-        _header.payloadLength |= incoming;
-      }
-      if (frameCount == 2)
-      {
-        _header.payloadLength <<= 1;
-        _header.payloadLength |= incoming >> 7;
-        _header.EAF = (incoming >> 6) & 0x01;
-        _header.crcType = (incoming >> 4) & 0x03;
-        switch (_header.crcType)
+        spartn[1 + frameCount] = incoming;
+        if (frameCount == 0)
         {
-          case 0:
-            crcBytes = 1;
-            break;
-          case 1:
-            crcBytes = 2;
-            break;
-          case 2:
-            crcBytes = 3;
-            break;
-          default:
-            crcBytes = 4;
-            break;
+            // messageType = incoming >> 1;
+            payloadLength = incoming & 0x01;
         }
-        _header.frameCRC = incoming & 0x0F;
-        spartn[3] = spartn[3] & 0xF0; // Zero the 4 LSBs before calculating the CRC
-        if (uSpartnCrc4(&spartn[1], 3) == _header.frameCRC)
+        if (frameCount == 1)
         {
-          spartn[3] = incoming; // Restore TF005 and TF006 now we know the data is valid
-          parseState = TF007;
+            payloadLength <<= 8;
+            payloadLength |= incoming;
         }
-        else
+        if (frameCount == 2)
         {
-          parseState = waitingFor73;
-        }
-      }
-      frameCount++;
-      break;
-    case TF007:
-      spartn[4] = incoming;
-      _header.messageSubtype = incoming >> 4;
-      _header.timeTagType = (incoming >> 3) & 0x01;
-      if (_header.timeTagType == 0)
-        TF007toTF016 = 4;
-      else
-        TF007toTF016 = 6;
-      if (_header.EAF > 0)
-        TF007toTF016 += 2;
-      parseState = TF009;
-      frameCount = 1;          
-      break;
-    case TF009:
-      spartn[4 + frameCount] = incoming;
-      frameCount++;
-      if (frameCount == TF007toTF016)
-      {
-        if (_header.EAF == 0)
-        {
-          _header.authenticationIndicator = 0;
-          _header.embeddedApplicationLengthBytes = 0;
-        }
-        else
-        {
-          _header.authenticationIndicator = (incoming >> 3) & 0x07;
-          if (_header.authenticationIndicator <= 1)
-            _header.embeddedApplicationLengthBytes = 0;
-          else
-          {
-            switch(incoming & 0x07)
+            payloadLength <<= 1;
+            payloadLength |= incoming >> 7;
+            EAF = (incoming >> 6) & 0x01;
+            crcType = (incoming >> 4) & 0x03;
+            switch (crcType)
             {
-              case 0:
-                _header.embeddedApplicationLengthBytes = 8; // 64 bits
+            case 0:
+                crcBytes = 1;
                 break;
-              case 1:
-                _header.embeddedApplicationLengthBytes = 12; // 96 bits
+            case 1:
+                crcBytes = 2;
                 break;
-              case 2:
-                _header.embeddedApplicationLengthBytes = 16; // 128 bits
+            case 2:
+                crcBytes = 3;
                 break;
-              case 3:
-                _header.embeddedApplicationLengthBytes = 32; // 256 bits
-                break;
-              default:
-                _header.embeddedApplicationLengthBytes = 64; // 512 / TBD bits
+            default:
+                crcBytes = 4;
                 break;
             }
-          }
+            frameCRC = incoming & 0x0F;
+            spartn[3] = spartn[3] & 0xF0; // Zero the 4 LSBs before calculating the CRC
+            if (uSpartnCrc4(&spartn[1], 3) == frameCRC)
+            {
+                spartn[3] = incoming; // Restore TF005 and TF006 now we know the data is valid
+                parseState = TF007;
+            }
+            else
+            {
+                // Invalid header CRC
+                spartn[3] = incoming; // Restore the byte now we know the data is invalid
+                parseState = waitingFor73;
+                numDataBytes = 4;
+                return (const uint8_t *)spartn;
+            }
         }
-        parseState = TF016;
-        frameCount = 0;                  
-      }
-      break;
+        frameCount++;
+        break;
+    case TF007:
+        spartn[4] = incoming;
+        // messageSubtype = incoming >> 4;
+        timeTagType = (incoming >> 3) & 0x01;
+        if (timeTagType == 0)
+            TF007toTF016 = 4;
+        else
+            TF007toTF016 = 6;
+        if (EAF > 0)
+            TF007toTF016 += 2;
+        parseState = TF009;
+        frameCount = 1;
+        break;
+    case TF009:
+        spartn[4 + frameCount] = incoming;
+        frameCount++;
+        if (frameCount == TF007toTF016)
+        {
+            if (EAF == 0)
+            {
+                authenticationIndicator = 0;
+                embeddedApplicationLengthBytes = 0;
+            }
+            else
+            {
+                authenticationIndicator = (incoming >> 3) & 0x07;
+                if (authenticationIndicator <= 1)
+                    embeddedApplicationLengthBytes = 0;
+                else
+                {
+                    switch (incoming & 0x07)
+                    {
+                    case 0:
+                        embeddedApplicationLengthBytes = 8; // 64 bits
+                        break;
+                    case 1:
+                        embeddedApplicationLengthBytes = 12; // 96 bits
+                        break;
+                    case 2:
+                        embeddedApplicationLengthBytes = 16; // 128 bits
+                        break;
+                    case 3:
+                        embeddedApplicationLengthBytes = 32; // 256 bits
+                        break;
+                    default:
+                        embeddedApplicationLengthBytes = 64; // 512 / TBD bits
+                        break;
+                    }
+                }
+            }
+            parseState = TF016;
+            frameCount = 0;
+        }
+        break;
     case TF016:
-      spartn[4 + TF007toTF016 + frameCount] = incoming;
-      frameCount++;
-      if (frameCount == _header.payloadLength)
-      {
-        if (_header.embeddedApplicationLengthBytes > 0)
+        spartn[4 + TF007toTF016 + frameCount] = incoming;
+        frameCount++;
+        if (frameCount == payloadLength)
         {
-          parseState = TF017;
-          frameCount = 0;
+            if (embeddedApplicationLengthBytes > 0)
+            {
+                parseState = TF017;
+                frameCount = 0;
+            }
+            else
+            {
+                parseState = TF018;
+                frameCount = 0;
+            }
         }
-        else               
-        {
-          parseState = TF018;
-          frameCount = 0;
-        }
-      }
-      break;
+        break;
     case TF017:
-      spartn[4 + TF007toTF016 + _header.payloadLength + frameCount] = incoming;
-      frameCount++;
-      if (frameCount == _header.embeddedApplicationLengthBytes)
-      {
-        parseState = TF018;
-        frameCount = 0;        
-      }
-      break;
+        spartn[4 + TF007toTF016 + payloadLength + frameCount] = incoming;
+        frameCount++;
+        if (frameCount == embeddedApplicationLengthBytes)
+        {
+            parseState = TF018;
+            frameCount = 0;
+        }
+        break;
     case TF018:
-      spartn[4 + TF007toTF016 + _header.payloadLength + _header.embeddedApplicationLengthBytes + frameCount] = incoming;
-      frameCount++;
-      if (frameCount == crcBytes)
-      {
-          parseState = waitingFor73;
-          uint16_t numBytes = 4 + TF007toTF016 + _header.payloadLength + _header.embeddedApplicationLengthBytes;
-          uint8_t *ptr = &spartn[numBytes];
-          switch (_header.crcType)
-          {
+        spartn[4 + TF007toTF016 + payloadLength + embeddedApplicationLengthBytes + frameCount] = incoming;
+        frameCount++;
+        if (frameCount == crcBytes)
+        {
+            parseState = waitingFor73;
+            uint16_t numBytes = 4 + TF007toTF016 + payloadLength + embeddedApplicationLengthBytes;
+            uint8_t *ptr = &spartn[numBytes];
+            switch (crcType)
+            {
             case 0:
             {
-              uint8_t expected = *ptr;
-              if (uSpartnCrc8(&spartn[1], numBytes - 1) == expected) // Don't include the preamble in the CRC
-              {
-                valid = true;
-                len = numBytes + 1;
-              }
+                uint8_t expected = *ptr;
+                valid = (uSpartnCrc8(&spartn[1], numBytes - 1) == expected); // Don't include the preamble in the CRC
+                numDataBytes = numBytes + 1;
+                return (const uint8_t *)spartn;
             }
             break;
             case 1:
             {
-              uint16_t expected = *ptr++;
-              expected <<= 8;
-              expected |= *ptr;
-              if (uSpartnCrc16(&spartn[1], numBytes - 1) == expected) // Don't include the preamble in the CRC
-              {
-                valid = true;
-                len = numBytes + 2;
-              }
+                uint16_t expected = *ptr++;
+                expected <<= 8;
+                expected |= *ptr;
+                valid = (uSpartnCrc16(&spartn[1], numBytes - 1) == expected); // Don't include the preamble in the CRC
+                numDataBytes = numBytes + 2;
+                return (const uint8_t *)spartn;
             }
             break;
             case 2:
             {
-              uint32_t expected = *ptr++;
-              expected <<= 8;
-              expected |= *ptr++;
-              expected <<= 8;
-              expected |= *ptr;
-              if (uSpartnCrc24(&spartn[1], numBytes - 1) == expected) // Don't include the preamble in the CRC
-              {
-                valid = true;
-                len = numBytes + 3;
-              }
+                uint32_t expected = *ptr++;
+                expected <<= 8;
+                expected |= *ptr++;
+                expected <<= 8;
+                expected |= *ptr;
+                valid = (uSpartnCrc24(&spartn[1], numBytes - 1) == expected); // Don't include the preamble in the CRC
+                numDataBytes = numBytes + 3;
+                return (const uint8_t *)spartn;
             }
             break;
             default:
             {
-              uint32_t expected = *ptr++;
-              expected <<= 8;
-              expected |= *ptr++;
-              expected <<= 8;
-              expected |= *ptr++;
-              expected <<= 8;
-              expected |= *ptr;
-              if (uSpartnCrc32(&spartn[1], numBytes - 1) == expected)
-              {
-                valid = true;
-                len = numBytes + 4;
-              }
+                uint32_t expected = *ptr++;
+                expected <<= 8;
+                expected |= *ptr++;
+                expected <<= 8;
+                expected |= *ptr++;
+                expected <<= 8;
+                expected |= *ptr;
+                valid = (uSpartnCrc32(&spartn[1], numBytes - 1) == expected);
+                numDataBytes = numBytes + 4;
+                return (const uint8_t *)spartn;
             }
             break;
-          }
-      }
-      break;
-  }
+            }
+        }
+        break;
+    }
 
-  return &spartn[0];
+    return nullptr; // nullptr indicates SPARTN data is being parsed (absorbed)
 }
-

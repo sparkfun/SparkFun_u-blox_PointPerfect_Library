@@ -14,7 +14,8 @@
     * This can be RXM-SFRBX, or RTCM (1019, 1020, 1042, 1046). This example uses RTCM from the X5
 
   * In this example, the NMEA and RTCM output from the X5 is "Encapsulated" in SBF format
-    * This makes it easier to separate NMEA and RTCMv3 from the unencapsulated LBandBeam1 data
+    * This makes it easier to separate NMEA and RTCMv3 from the unencapsulated LBandBeam1 data when
+    * all three are output on single COM port
 
   Note: you need a valid u-blox Thingstream PointPerfect L-Band or L-Band + IP account to
         access the SPARTN decryption key. Copy and paste the current key into secrets.h
@@ -52,7 +53,7 @@
 
 // US SPARTN 1.8 service is on 1556290000 Hz
 // EU SPARTN 1.8 service is on 1545260000 Hz
-const String lBandFreq = "1545260000";
+const String lBandFreq = "1556290000";
 
 // Keep count of the number of messages received. Print the count periodically
 uint32_t spartnReceived = 0;
@@ -116,6 +117,8 @@ const char *PPLReturnStatusToStr(ePPL_ReturnStatus status)
 // Parse RTCM data
 // This is a very simplistic parser. It only extracts the Message Numbers.
 // It does not CRC-check the data.
+// dataBytes contains the incoming RTCM message or messages, numDataBytes in total
+// The String will contain the message number of all messages parsed
 
 String &parseRTCM(uint8_t *dataBytes, size_t numDataBytes)
 {
@@ -181,6 +184,10 @@ String &parseRTCM(uint8_t *dataBytes, size_t numDataBytes)
 //=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 
 // Analyze encapsulated SBF data
+// buffer contains a single SBF block
+// If the mode matches: a pointer to the encapsulated Payload is returned;
+// numDataBytes is set to the length (N) of the Payload
+// If no match is found, nullptr is returned
 
 const uint8_t *checkEncapsulatedRTCMv3(const uint8_t *buffer, size_t &numDataBytes)
 {
@@ -205,9 +212,9 @@ const uint8_t *checkEncapsulatedOutput(uint8_t mode, const uint8_t *buffer, size
     if (*ptr != mode) // Check the mode
         return nullptr;
     ptr += 2;            // Point to the payload length
-    uint16_t len = *ptr; // Extract the payload length
+    uint16_t len = *ptr; // Extract the payload length LSB
     ptr++;
-    len |= ((uint16_t)(*ptr)) << 8; // Extract the payload length
+    len |= ((uint16_t)(*ptr)) << 8; // Extract the payload length MSB
     ptr += 3;                       // Point to the payload
     numDataBytes = (size_t)len;     // Return the payload length
     return ptr;                     // Return a pointer to the payload
@@ -294,6 +301,15 @@ bool sendWithResponse(String message, const char *reply, unsigned long timeout, 
 
 //=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 
+// Configure the mosaic-X5 message output - using a single COM port:
+// * Disable message output on COM4 - using the escape sequence if needed
+// * Configure the Talker ID (GP)
+// * Output NMEA GGA and ZDA at 1Hz
+// * Output RTCMv3 RTCM1019 + RTCM1020 + RTCM1042 + RTCM1046
+// * Mark L5 as healthy
+// * Configure L-Band (LBandBeam1, User1) for u-blox PointPerfect
+// * Finally set COM4 to output: RTCMv3 + NMEA as encapsulated SBF; LBandBeam1 (raw)
+
 bool configureMosaic(void)
 {
     int retries = 0;
@@ -347,7 +363,6 @@ bool configureMosaic(void)
     result &= sendWithResponse("slsm,manual,Inmarsat,User1,\n\r", "LBandSelectMode");                                  // Set L-Band demodulator to manual
 
     // Finally, enable message output on COM4 using Encapsulation (on RTCMv3 and NMEA)
-    // result &= sendWithResponse("sdio,COM4,auto,RTCMv3+SBF+NMEA+LBandBeam1+Encapsulate\n\r", "DataInOut");
     result &= sendWithResponse("sdio,COM4,auto,RTCMv3+SBF+NMEA+LBandBeam1+Encapsulate\n\r", "DataInOut");
 
     if (result)
@@ -388,22 +403,20 @@ void setup()
     //   RTCM1020
     //   RTCM1042
     //   RTCM1046
-    // Also configure L-Band and direct the SBF-encapsulated raw stream to COM4
+    //   LBandBeam1
+    // RTCMv3 and NMEA are encapsulated in SBF blocks
 
     serialGNSS.begin(115200, SERIAL_8N1, serialRxPin, serialTxPin);
 
     flushRX(100);
 
     configureMosaic();
-
-    // myLBand.enableDebugging(); // Uncomment this line to enable GNSS Library debug messages - so we can see what parseSPARTN is doing
 }
 
 //=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 
 void loop()
 {
-    bool validSBF = false;
     bool newNMEA = false;
     bool newRTCMv3 = false;
     bool newSPARTN = false;
@@ -412,15 +425,15 @@ void loop()
     bool keepGoing = true;
     while ((serialGNSS.available()) && keepGoing)
     {
+        bool validSBF = false;
         size_t numDataBytes;
         // Check for incoming SBF data
-        uint8_t c = serialGNSS.read();
-        const uint8_t *buffer = parseSBF(c, validSBF, numDataBytes);
+        const uint8_t *buffer = parseSBF(serialGNSS.read(), validSBF, numDataBytes);
 
         if ((buffer != nullptr) && (validSBF)) // If buffer contains valid SBF data
         {
             size_t payloadLength;
-            const uint8_t *payloadPtr = checkEncapsulatedNMEA(buffer, payloadLength);
+            const uint8_t *payloadPtr = checkEncapsulatedNMEA(buffer, payloadLength); // Check for encapsulated NMEA
             if (payloadPtr != nullptr)
             {
                 nmeaReceived++;
@@ -436,7 +449,7 @@ void loop()
                 keepGoing = false; // Exit the while loop - we sent a valid NMEA message
             }
 
-            payloadPtr = checkEncapsulatedRTCMv3(buffer, payloadLength);
+            payloadPtr = checkEncapsulatedRTCMv3(buffer, payloadLength); // Check for encapsulated RTCMv3
             if (payloadPtr != nullptr)
             {
                 rtcmReceived++;
@@ -459,9 +472,9 @@ void loop()
             {
                 bool validSPARTN;
                 uint16_t len;
-                uint8_t *spartn = parseSPARTN(*buffer++, validSPARTN, len);
+                const uint8_t *spartn = parseSPARTN(*buffer++, validSPARTN, len);
 
-                if (validSPARTN)
+                if ((spartn != nullptr) && (validSPARTN))
                 {
                     // Serial.print(F("Valid SPARTN data parsed. Pushing "));
                     // Serial.print(len);
@@ -481,7 +494,7 @@ void loop()
                 }
             }
         }
-    }
+    } // /while ((serialGNSS.available()) && keepGoing)
 
     if (newNMEA || newRTCMv3 || newSPARTN) // Decide when to call PPL_GetRTCMOutput
     {
