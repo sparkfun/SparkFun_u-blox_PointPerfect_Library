@@ -10,6 +10,10 @@
     The PPL will output RTCM data
     The RTCM data is pushed back to the UM980 allowing it to achieve a FIXED RTK solution
 
+  Note: you need a valid u-blox Thingstream PointPerfect L-Band + IP or IP-only account to
+        access the SPARTN decryption key. Copy and paste your Client ID, Client Key,
+        and Client Certificate into secrets.h
+
   Hardware:
   This example was written for:
     SparkFun Torch -  (Coming soon!) - The ESP32 UART1 is connected to UM980 UART 3
