@@ -73,14 +73,14 @@ HardwareSerial lbandSerial(1);  // UART1: TX on 25, RX on 4. Connected to mosaic
 // 1 0 : SCL & SDA
 // 1 1 : DAC (26) & ADC (39)
 
-const int muxA = 18; // 74HC4052 Multiplexer. Note: this will move to pin 2 on the next PCB rev
-const int muxB = 19; // 74HC4052 Multiplexer. Note: this will move to pin 12 on the next PCB rev
+const int muxA = 2; // 74HC4052 Multiplexer
+const int muxB = 12; // 74HC4052 Multiplexer
 const int SDA_1 = 21;
 const int SCL_1 = 22;
 const int mosaicOnOff = 23; // Drive low for >= 50ms to toggle from on to off and vice versa
 const int peripheralPower = 27; // Pull high to enable power for the mosaic-X5, microSD, multiplexer and main board Qwiic connector
-const int powerControl = 32; // Default to input pull-up. Low indicates power button is being held. Change to output and drive low for power off
-const int fastOff = 33; // Default to input. Change to output and drive low for fast power off
+const int powerControl = 32; // Default to input pull-up. Low indicates power button is being held
+const int fastOff = 33; // Default to input. Change to output and drive high for fast power off
 const int mosaicReady = 36; // High when module is ready
 
 //=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
@@ -390,35 +390,6 @@ bool configureLBand(bool restart)
 
 //=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 
-bool mosaicIsReady(unsigned long timeout = 0); // Header
-bool mosaicIsReady(unsigned long timeout)
-{
-  if (timeout == 0)
-    return (digitalRead(mosaicReady) == HIGH);
-
-  unsigned long startTime = millis();
-  while ((digitalRead(mosaicReady) == LOW) && (millis() < (startTime + timeout)))
-  {
-    delay(1);
-  }
-
-  return (digitalRead(mosaicReady) == HIGH);
-}
-
-void toggleMosaicPower(unsigned long duration = 50); // Header
-void toggleMosaicPower(unsigned long duration)
-{
-  digitalWrite(mosaicOnOff, LOW); // Toggle mosaic power
-  unsigned long startTime = millis();
-  while (millis() < (startTime + duration))
-  {
-    delay(1);
-  }
-  digitalWrite(mosaicOnOff, HIGH);
-}
-
-//=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
-
 void setup()
 {
   // Init pins
@@ -457,15 +428,6 @@ void setup()
   Serial.println(PPLReturnStatusToStr(result));
 
   //=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
-  // Check if the mosaic-X5 is on. If not, toggle it on
-
-  while (!mosaicIsReady(2000)) // Keep checking mosaicReady. Wait up to 2 seconds for it to go high
-  {
-    toggleMosaicPower(50); // Toggle mosaic power
-    Serial.println(F("Toggling mosaic power..."));
-  }
-
-  //=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
   // Connect to the mosaic-X5
   // Tell it to output the following on COM1:
   //   GPGGA
@@ -484,6 +446,7 @@ void setup()
 
   Serial.println(F("Configuring mosaic-X5 message output on COM1"));
 
+  // mosaic-X5 takes ~8 seconds to boot. Keep trying until mosaic responds
   while (!sendWithResponse("sdio,COM1,,RTCMv3+NMEA\n\r", "DataInOut")) // Set Data In/Out - enable RTCMv3 output
   {
     Serial.println(F("No response from mosaic-X5. Retrying - with escape sequence..."));
